@@ -16,5 +16,6 @@ COPY . .
 # Expose port 
 EXPOSE 8090 
 
+
 # Command to run the application
 CMD ["python", "app.py"]
