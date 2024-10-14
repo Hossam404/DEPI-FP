@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: my-app-k8s
+  namespace: flask-app
   labels:
     app: my-app-k8s
 spec:
@@ -16,6 +17,9 @@ spec:
     spec:
       containers:
       - name: my-flask-app
-        image: my_app:lts
+        image: hussamgamal/flask-app:v1
         ports:
-        - containerPort: 8000
+        - containerPort: 5000
+
+
+
