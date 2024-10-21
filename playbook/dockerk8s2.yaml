@@ -1,0 +1,72 @@
+---
+- name: Setup Docker and Kubernetes on remote EC2 instance
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install necessary dependencies
+      dnf:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - python3
+        - dnf-plugins-core
+        - curl
+        - gnupg2
+        - software-properties-common  # If needed
+
+    - name: Add Docker GPG key
+      rpm_key:
+        state: present
+        key: https://download.docker.com/linux/centos/gpg
+
+    - name: Add Docker repository
+      dnf_repository:
+        name: docker
+        description: Docker Packages for Amazon Linux
+        baseurl: https://download.docker.com/linux/centos/7/x86_64/stable
+        enabled: yes
+        gpgcheck: yes
+        gpgkey: https://download.docker.com/linux/centos/gpg
+
+    - name: Install Docker
+      dnf:
+        name: docker
+        state: present
+
+    - name: Enable and start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add current user to Docker group
+      user:
+        name: "{{ ansible_user_id }}"
+        groups: docker
+        append: yes
+
+    - name: Install Minikube prerequisites
+      dnf:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - conntrack
+
+    - name: Download and install Minikube
+      shell: |
+        curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        sudo install minikube /usr/local/bin/
+
+    - name: Download and install kubectl
+      shell: |
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        sudo install kubectl /usr/local/bin/
+
+    - name: Start Minikube with Docker driver
+      shell: |
+        minikube start --driver=docker
+
+    - name: Verify Minikube and Kubernetes are running
+      shell: |
+        minikube status
