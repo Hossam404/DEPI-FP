@@ -4,30 +4,34 @@
   become: true
 
   tasks:
-    - name: Install Docker dependencies
-      apt:
+    - name: Install necessary dependencies
+      dnf:
         name: "{{ item }}"
         state: present
-      with_items:
-        - apt-transport-https
-        - ca-certificates
+      loop:
+        - python3
+        - dnf-plugins-core
         - curl
-        - gnupg-agent
-        - software-properties-common
+        - gnupg2
+        - software-properties-common  # If needed
 
-    - name: Add Docker GPG apt key
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
+    - name: Add Docker GPG key
+      rpm_key:
         state: present
+        key: https://download.docker.com/linux/centos/gpg
 
     - name: Add Docker repository
-      apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
-        state: present
+      dnf_repository:
+        name: docker
+        description: Docker Packages for Amazon Linux
+        baseurl: https://download.docker.com/linux/centos/7/x86_64/stable
+        enabled: yes
+        gpgcheck: yes
+        gpgkey: https://download.docker.com/linux/centos/gpg
 
     - name: Install Docker
-      apt:
-        name: docker-ce
+      dnf:
+        name: docker
         state: present
 
     - name: Enable and start Docker service
@@ -43,10 +47,10 @@
         append: yes
 
     - name: Install Minikube prerequisites
-      apt:
+      dnf:
         name: "{{ item }}"
         state: present
-      with_items:
+      loop:
         - conntrack
 
     - name: Download and install Minikube
