@@ -2,7 +2,7 @@ resource "aws_instance" "appdep" {
   ami               = var.ami_id
   instance_type     = var.instance_type
   security_groups   = [var.public_SG]
-  subnet_id         = var.public_subnet
+  subnet_id         = var.public-subnet
   associate_public_ip_address = true
   key_name          = aws_key_pair.tf-key-pairz.id
 
