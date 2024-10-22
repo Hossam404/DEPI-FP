@@ -1,72 +1,51 @@
 ---
-- name: Setup Docker and Kubernetes on remote EC2 instance
+- name: Setup Docker, Kubernetes, and Minikube on EC2 instance
   hosts: all
-  become: true
-
+  become: true  # Use 'become' to run tasks as sudo
   tasks:
+    - name: Update package index
+      command: dnf makecache
+
     - name: Install necessary dependencies
       dnf:
-        name: "{{ item }}"
+        name: conntrack
         state: present
-      loop:
-        - python3
-        - dnf-plugins-core
-        - curl
-        - gnupg2
-        - software-properties-common  # If needed
-
-    - name: Add Docker GPG key
-      rpm_key:
-        state: present
-        key: https://download.docker.com/linux/centos/gpg
-
-    - name: Add Docker repository
-      dnf_repository:
-        name: docker
-        description: Docker Packages for Amazon Linux
-        baseurl: https://download.docker.com/linux/centos/7/x86_64/stable
-        enabled: yes
-        gpgcheck: yes
-        gpgkey: https://download.docker.com/linux/centos/gpg
 
     - name: Install Docker
       dnf:
         name: docker
         state: present
 
-    - name: Enable and start Docker service
-      service:
+    - name: Start Docker service
+      systemd:
         name: docker
         state: started
-        enabled: yes
+        enabled: true
 
-    - name: Add current user to Docker group
-      user:
-        name: "{{ ansible_user_id }}"
-        groups: docker
-        append: yes
-
-    - name: Install Minikube prerequisites
-      dnf:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - conntrack
-
-    - name: Download and install Minikube
-      shell: |
-        curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-        sudo install minikube /usr/local/bin/
-
-    - name: Download and install kubectl
+    - name: Download kubectl binary
       shell: |
         curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-        sudo install kubectl /usr/local/bin/
 
-    - name: Start Minikube with Docker driver
-      shell: |
-        minikube start --driver=docker
+    - name: Make kubectl binary executable
+      command: chmod +x kubectl
 
-    - name: Verify Minikube and Kubernetes are running
+    - name: Move kubectl to /usr/local/bin
+      command: mv kubectl /usr/local/bin/
+
+    - name: Add Kubernetes repository
       shell: |
-        minikube status
+        cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+        [kubernetes]
+        name=Kubernetes
+        baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+        enabled=1
+        gpgcheck=1
+        repo_gpgcheck=1
+        gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+        EOF
+
+    - name: Install Minikube
+      shell: |
+        curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 &&
+        chmod +x minikube &&
+        sudo mv minikube /usr/local/bin/
