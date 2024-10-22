@@ -24,7 +24,7 @@ resource "aws_instance" "appdep" {
     echo '${tls_private_key.rsa-key.private_key_pem}' > /home/ec2-user/private-key.pem
     chmod 400 /home/ec2-user/private-key.pem
     # If tf-key-pairz.pem is not supposed to be on the instance, comment this line out
-    # chmod 400 tf-key-pairz.pem
+    chmod 400 tf-key-pairz.pem
   EOF
 
   tags = {
