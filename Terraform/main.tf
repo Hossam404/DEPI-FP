@@ -21,5 +21,5 @@ module "compute" {
   instance_type = var.instance_type
   public_SG = module.security.public
   public-subnet = module.network.public-subnet
- 
+  availability_zone = var.availability_zone
 }

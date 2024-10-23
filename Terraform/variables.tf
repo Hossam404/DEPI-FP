@@ -27,6 +27,11 @@ variable "instance_type" {
   
 }
 
+variable "availability_zone" {
+  type = string
+  description = "AZ for Ec2"
+  
+}
 
 
 
