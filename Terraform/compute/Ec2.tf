@@ -5,6 +5,7 @@ resource "aws_instance" "appdep" {
   subnet_id         = var.public-subnet
   associate_public_ip_address = true
   key_name          = aws_key_pair.tf-key-pairz.id
+  availability_zone = var.availability_zone 
 
   # Add the dependency on the key pair
   depends_on = [
