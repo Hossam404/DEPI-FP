@@ -8,19 +8,19 @@ Deployment of resources in AWS (us-east-1 region)
 Provisioning and configuration using Ansible
 Integration with Jenkins for automated CI/CD <br>
 
-🚀 Getting Started
-Prerequisites 🛠️
-Ensure you have the following installed:
-AWS Development EC2 
-Terraform 🏗️
-AWS CLI ☁️
-Jenkins (Docker image recommended) 🐳
-Python 🐍
-Docker 🐋
-Kubernetes CLI (kubectl) 🧩
-Ansible 📜
-AWS CLI Setup 🔑
-# 1. Setting Up AWS and DockerHub Credentials in Jenkins:
+🚀 Getting Started <br>
+Prerequisites 🛠️ <br>
+Ensure you have the following installed:  <br>
+AWS Development EC2  <br>
+Terraform 🏗️  <br>
+AWS CLI ☁️  <br>
+Jenkins (Docker image recommended) 🐳  <br>
+Python 🐍  <br>
+Docker 🐋  <br>
+Kubernetes CLI (kubectl) 🧩  <br>
+Ansible 📜  <br>
+AWS CLI Setup 🔑  <br>
+<h2> 1. Setting Up AWS and DockerHub Credentials in Jenkins: </h2>
 Go to Manage Jenkins → Credentials and add AWS Access Key and Secret Access Key and DockerHub Creditials.<br>
 
 Open a terminal and enter:<br>
@@ -30,9 +30,8 @@ Input your AWS Access Key ID, Secret Access Key, Region (e.g., us-east-1), and o
 Obtaining AWS Access Keys 🔑
 Log in to AWS, go to Security Credentials.
 Under Access Keys, create a new key and add it during aws configure.
-Project Components 🚧
 
-# 2. Terraform Modules for Infrastructure Setup
+<h2> 2. Terraform Modules for Infrastructure Setup </h2>
 Network Module: Sets up the VPC, subnets, Internet Gateway, and route tables.
 Compute Module: Configures EC2 instances, including the App EC2 instance for the Flask app.
 Security Module: Defines security groups and IAM roles.
@@ -40,7 +39,7 @@ Security Module: Defines security groups and IAM roles.
 Execute Terraform Files:
 `terraform apply`
 
-# 2. Kubernetes for Containerized Deployment 🧩
+<h2> 3. Kubernetes for Containerized Deployment 🧩</h2>
 Define Kubernetes manifests for namespace, deployment, and load balancer.
 Use kubectl to deploy the manifests: 
 
@@ -48,22 +47,19 @@ Use kubectl to deploy the manifests:
 `kubectl apply -f deployment.yaml` <br>
 `kubectl apply -f loadbalancer.yaml` <br>
 
-# 3. Ansible for Configuration Management 📜
+<h2> 4. Ansible for Configuration Management 📜</h2>
 Playbook: Installs Docker and Kubernetes on the App EC2 instance, ensuring the app environment is ready.
-Run the Ansible playbook:<br>
+Run the Ansible playbook: <br>
 `ansible-playbook -i inventory.txt dockerk8s.yml`
 
-# 4. Jenkins for CI/CD Integration 🤖
+<h2> 5. Jenkins for CI/CD Integration 🤖</h2>
 Pipeline Setup:
-Clone GitHub repository
-Trigger Terraform to provision infrastructure
-Run Ansible playbook for configuration
-Deploy Flask app using Kubernetes
+Clone GitHub repository <br>
+Trigger Terraform to provision infrastructure <br>
+Run Ansible playbook for configuration <br>
+Deploy Flask app using Kubernetes <br>
 
 
-
-# 6. Configure a new Pipeline Job with the pipeline script in CICD.groovy.
-Select the environment to build with parameters, which triggers the complete deployment.
 
 
 
